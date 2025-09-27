@@ -1,0 +1,213 @@
+USE survivor;
+
+CREATE TABLE Season (
+    SeasonID INT AUTO_INCREMENT PRIMARY KEY,
+    SeasonName VARCHAR(100) NOT NULL,
+    StartDate DATE,
+    EndDate DATE,
+    Winner VARCHAR(100)
+);
+
+
+
+CREATE TABLE Tribe (
+    TribeID INT AUTO_INCREMENT PRIMARY KEY,
+    TribeName VARCHAR(100) NOT NULL,
+    SeasonID INT,
+    FOREIGN KEY (SeasonID) REFERENCES Season(SeasonID)
+);
+
+CREATE TABLE Player (
+    PlayerID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Email VARCHAR(100),
+    Major VARCHAR(100),
+    Placement INT,
+    TribeID INT,
+    FOREIGN KEY (TribeID) REFERENCES Tribe(TribeID)
+);
+
+CREATE TABLE Player_Episode (
+    PlayerID INT,
+    EpisodeID INT,
+    PRIMARY KEY (PlayerID, EpisodeID),
+    FOREIGN KEY (PlayerID) REFERENCES Player(PlayerID),
+    FOREIGN KEY (EpisodeID) REFERENCES Episode(EpisodeID)
+);
+
+CREATE TABLE Episode (
+    EpisodeID INT AUTO_INCREMENT PRIMARY KEY,
+    EpisodeName VARCHAR(100) NOT NULL,
+    ReleaseDate DATE,
+    SeasonID INT,
+    FOREIGN KEY (SeasonID) REFERENCES Season(SeasonID)
+);
+
+CREATE TABLE Challenge (
+    ChallengeID INT AUTO_INCREMENT PRIMARY KEY,
+    ChallengeName VARCHAR(100) NOT NULL,
+    ChallengeDescription TEXT,
+    EpisodeID INT,
+    FOREIGN KEY (EpisodeID) REFERENCES Episode(EpisodeID)
+);
+
+CREATE TABLE TribeChallenge (
+    ChallengeID INT,
+    TribeID INT,
+    Result ENUM('Won', 'Lost'),
+    PRIMARY KEY (ChallengeID, TribeID),
+    FOREIGN KEY (ChallengeID) REFERENCES Challenge(ChallengeID),
+    FOREIGN KEY (TribeID) REFERENCES Tribe(TribeID)
+);
+
+CREATE TABLE IndividualChallenge (
+    ChallengeID INT,
+    PlayerID INT,
+    Result ENUM('Won', 'Lost'),
+    PRIMARY KEY (ChallengeID, PlayerID),
+    FOREIGN KEY (ChallengeID) REFERENCES Challenge(ChallengeID),
+    FOREIGN KEY (PlayerID) REFERENCES Player(PlayerID)
+);
+
+CREATE TABLE Vote (
+    VoteID INT AUTO_INCREMENT PRIMARY KEY,
+    Date DATE,
+    EpisodeID INT,
+    VoterID INT,
+    VotedForID INT,
+    FOREIGN KEY (EpisodeID) REFERENCES Episode(EpisodeID),
+    FOREIGN KEY (VoterID) REFERENCES Player(PlayerID),
+    FOREIGN KEY (VotedForID) REFERENCES Player(PlayerID)
+);
+
+CREATE TABLE Advantage (
+    AdvantageID INT AUTO_INCREMENT PRIMARY KEY,
+    AdvantageType VARCHAR(100),
+    PlayerID INT,
+    FOREIGN KEY (PlayerID) REFERENCES Player(PlayerID)
+);
+
+USE survivor;
+
+INSERT INTO Season (SeasonName, StartDate, EndDate, Winner)
+VALUES ('Survivor: Season 1', '2000-05-31', '2000-08-23', 'Scarlett'),
+       ('Survivor: Season Wit, Grit, Charm', '2023-04-06', '2023-05-26', 'Liam'),
+       ('Survivor: Season Captains Campaign', '2023-11-30', '2024-01-19', 'Josh'),
+       ('Survivor: Season Heroes vs Villains', '2021-05-14', '2021-07-23', 'Nina'),
+       ('Survivor: Island of Secrets', '2022-02-10', '2022-04-15', 'Mark'),
+       ('Survivor: Outwit, Outplay, Outlast', '2022-09-01', '2022-11-09', 'Sarah'),
+       ('Survivor: Battle of the Exes', '2020-03-05', '2020-05-22', 'John'),
+       ('Survivor: Clash of the Titans', '2019-07-10', '2019-09-18', 'Elena'),
+       ('Survivor: Redemption Island', '2018-01-12', '2018-03-30', 'Michael'),
+       ('Survivor: Ghost Island', '2017-05-20', '2017-08-02', 'Claire');
+
+INSERT INTO Tribe (TribeName, SeasonID)
+VALUES ('Morro', 1),
+       ('Avila', 1),
+       ('Higuera (Grit)', 2),
+       ('Nipomo (Wit)', 2),
+       ('Cabrillo (Charm)', 2),
+       ('Cayucos', 3),
+       ('Huasna', 3),
+       ('Ventura', 4),
+       ('Santa Barbara', 5),
+       ('Los Osos', 6),
+       ('Pismo', 7),
+       ('Arroyo Grande', 8),
+       ('San Luis', 9),
+       ('Santa Margarita', 10);
+
+INSERT INTO Player (Name, Email, Major, Placement, TribeID)
+VALUES ('Anna', 'a****@calpoly.edu', 'Graphic Design', 4, 1),
+       ('Benjamin', 'b****@calpoly.edu', 'Business', 9, 1),
+       ('Brooke', 'b****@calpoly.edu', 'Comp Sci', 6, 1),
+       ('Cassadie', 'c****@calpoly.edu', 'Arch Eng', 15, 1),
+       ('Gabi', 'g****@calpoly.edu', 'Sociology', 12, 2),
+       ('Gavin', 'g****@calpoly.edu', 'Bio Med', 10, 1),
+       ('Lizeth', 'e****@calpoly.edu', 'Mech Eng', 5, 5),
+       ('Brenna', 'b****@calpoly.edu', 'Education', 14, 5),
+       ('Korte', 'c****@calpoly.edu', 'Arch', 7, 4),
+       ('Gippy', 'g****@calpoly.edu', 'Business', 18, 5),
+       ('Amanda', 'a****@calpoly.edu', 'Business', 17, 5),
+       ('Liam', 'l****@calpoly.edu', 'History', 2, 6),
+       ('Emily', 'e****@calpoly.edu', 'Physics', 13, 7),
+       ('Josh', 'j****@calpoly.edu', 'Math', 8, 8),
+       ('Nina', 'n****@calpoly.edu', 'English', 3, 9),
+       ('Mark', 'm****@calpoly.edu', 'Chemistry', 11, 10),
+       ('Sarah', 's****@calpoly.edu', 'Political Science', 1, 10),
+       ('Elena', 'e****@calpoly.edu', 'Biology', 5, 11),
+       ('John', 'j****@calpoly.edu', 'History', 9, 12),
+       ('Michael', 'm****@calpoly.edu', 'Engineering', 4, 13),
+       ('Claire', 'c****@calpoly.edu', 'Economics', 2, 14);
+
+INSERT INTO Episode (EpisodeName, ReleaseDate, SeasonID)
+VALUES ('Mustang Match-up', '2023-11-03', 1),
+       ('The Frat Energy', '2023-11-24', 1),
+       ('Wit, Grit, Charm', '2024-02-15', 2),
+       ('He said What!?', '2024-03-05', 2),
+       ('The Great Divide', '2021-06-10', 4),
+       ('Secrets Unveiled', '2022-03-15', 5),
+       ('Outwit, Outplay, Outlast', '2022-10-01', 6),
+       ('Final Showdown', '2022-11-01', 6),
+       ('Redemption Battle', '2018-02-20', 9),
+       ('Ghostly Encounters', '2017-07-01', 10);
+
+INSERT INTO Challenge (ChallengeName, ChallengeDescription, EpisodeID)
+VALUES ('Water Works', 'The tribes, relay style, will transport water with a solo cup with holes from a cooler to a trash can bin. First to fill it with enough water wins immunity', 1),
+       ('Deep Dive', 'The first team to unscramble a word puzzle wins immunity. The tribes collect  the word tiles from the bottom of the PCV pool', 3),
+       ('Puzzle Masters', 'Solve a series of puzzles to win rewards', 5),
+       ('Strength Test', 'Physical challenges to test strength and endurance', 7),
+       ('Mind Over Matter', 'Mental challenges to test strategic thinking', 9),
+       ('Endurance Challenge', 'Long duration physical challenge to test stamina', 10),
+       ('Maze Runner', 'Navigate a maze blindfolded', 2),
+       ('Fire Making', 'First to make a fire wins immunity', 4),
+       ('Balance Beam', 'Cross a balance beam while carrying objects', 6),
+       ('Food Eating Contest', 'First to eat exotic foods wins immunity', 8);
+
+INSERT INTO TribeChallenge (ChallengeID, TribeID, Result)
+VALUES (1, 1, 'Won'),
+       (1, 2, 'Lost'),
+       (3, 3, 'Won'),
+       (3, 4, 'Lost'),
+       (5, 5, 'Won'),
+       (5, 6, 'Lost'),
+       (7, 7, 'Won'),
+       (7, 8, 'Lost'),
+       (9, 9, 'Won'),
+       (9, 10, 'Lost');
+
+INSERT INTO IndividualChallenge (ChallengeID, PlayerID, Result)
+VALUES (2, 1, 'Won'),
+       (2, 2, 'Lost'),
+       (4, 3, 'Won'),
+       (4, 4, 'Lost'),
+       (6, 5, 'Won'),
+       (6, 6, 'Lost'),
+       (8, 7, 'Won'),
+       (8, 8, 'Lost'),
+       (10, 9, 'Won'),
+       (10, 10, 'Lost');
+
+INSERT INTO Vote (Date, EpisodeID, Vote_For, Whomist_Voted)
+VALUES ('2000-05-31', 1, 1, 2),
+       ('2000-05-31', 1, 2, 1),
+       ('2021-06-10', 5, 3, 4),
+       ('2022-03-15', 6, 5, 6),
+       ('2023-11-03', 2, 7, 8),
+       ('2024-02-15', 3, 9, 10),
+       ('2018-02-20', 9, 11, 12),
+       ('2017-07-01', 10, 13, 14),
+       ('2023-11-24', 1, 15, 16),
+       ('2021-06-10', 5, 17, 18);
+
+INSERT INTO Advantage (AdvantageType, PlayerID)
+VALUES ('Hidden Immunity Idol', 1),
+       ('Double Vote', 2),
+       ('Extra Vote', 3),
+       ('Safety Without Power', 4),
+       ('Steal a Vote', 5),
+       ('Legacy Advantage', 6),
+       ('Idol Nullifier', 7),
+       ('Vote Blocker', 8),
+       ('Challenge Advantage', 9),
+       ('Secret Advantage', 10);
