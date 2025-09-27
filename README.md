@@ -27,7 +27,7 @@ The database schema was designed in 3rd Normal Form (3NF) to avoid redundancy an
 
 ### Entity-Relationship Diagram (ERD)
 
-![ERD Diagram]([assets/ERD.png](https://github.com/emilyzhu44/Survivor-SQL-Database/blob/main/Survivor%20ERD%20diagram.pdf))
+![ERD Diagram]([assets/ERD.png](https://github.com/emilyzhu44/Survivor-SQL-Database/blob/main/Survivor%20ERD%20diagram.pdf)
 *(Replace with your ERD image in the repo — usually kept in an `assets/` or `images/` folder.)*
 
 ---
