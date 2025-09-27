@@ -36,69 +36,88 @@ The database schema was designed in 3rd Normal Form (3NF) to avoid redundancy an
 ### 1. Players who did not make top 10
 
 ```sql
-SELECT Name, Placement
+SELECT *
 FROM Player
-WHERE Placement > 10;
+WHERE Placement > 11;
 ```
 
-✅ Shows which contestants were eliminated early, useful for analyzing underperformance trends.
+Shows which contestants were eliminated early, useful for analyzing underperformance trends.
 
 ---
 
 ### 2. Business majors with season & placement
 
 ```sql
-SELECT P.Name, P.Major, S.SeasonName, P.Placement
-FROM Player P
-JOIN Tribe T ON P.TribeID = T.TribeID
-JOIN Season S ON T.SeasonID = S.SeasonID
-WHERE P.Major = 'Business';
+SELECT p.Name AS PlayerName, p.Major, p.Placement, s.SeasonName
+FROM Player p JOIN Tribe t Join Season s
+ON p.TribeID = t.TribeID AND t.SeasonID = s.SeasonID
+WHERE p.Major = 'Business';
 ```
 
-✅ Highlights contestants with a business background and how well they performed.
+Highlights contestants with a business background and how well they performed.
 
 ---
 
 ### 3. Count of players per tribe per season
 
 ```sql
-SELECT S.SeasonName, T.TribeName, COUNT(P.PlayerID) AS PlayerCount
-FROM Player P
-JOIN Tribe T ON P.TribeID = T.TribeID
-JOIN Season S ON T.SeasonID = S.SeasonID
-GROUP BY S.SeasonName, T.TribeName;
+SELECT
+  s.SeasonName,
+  t.TribeName,
+  COUNT(p.PlayerID) AS PlayerCount
+FROM
+  Season s
+JOIN
+  Tribe T ON s.SeasonID = t.SeasonID
+LEFT JOIN
+  Player p ON t.TribeID=p.TribeID
+GROUP BY
+  s.SeasonName, T.TribeName
+ORDER BY
+  s.SeasonName, T.TribeName;
 ```
 
-✅ Provides an overview of team sizes — useful for balancing or fairness analysis.
+Provides an overview of team sizes — useful for balancing or fairness analysis.
 
 ---
 
 ### 4. Players with their tribe names
 
 ```sql
-SELECT P.Name, T.TribeName
-FROM Player P
-JOIN Tribe T ON P.TribeID = T.TribeID;
+SELECT p.Name AS PlayerName, t.TribeName
+FROM Player p JOIN Tribe t
+On p.TribeID = t.TribeID;
 ```
 
-✅ Maps each contestant to their tribe — a simple but foundational query for many analyses.
+Maps each contestant to their tribe — a simple but foundational query for many analyses.
 
 ---
 
 ### 5. First winner of Survivor
 
 ```sql
-SELECT Winner
-FROM Season
-ORDER BY StartDate ASC
-LIMIT 1;
+SELECT
+  p.Name AS FirstWinnerName,
+  p.Email AS FirstWinnerEmail,
+  s.SeasonName AS FirstSeasonName,
+  s.StartDate AS FirstSeasonStartDate,
+  s.EndDate AS FirstSeasonDate
+FROM
+  Season s
+JOIN
+  Tribe t ON s.SeasonID=t.SeasonID
+JOIN
+  Player p ON p.Name=s.Winner
+ORDER BY
+  s.StartDate
+Limit 1;
 ```
 
-✅ Returns the very first winner in Survivor history.
+Returns the very first winner in Survivor history.
 
 ---
 
-## 📊 Business Relevance
+## Business Relevance
 
 These queries mirror common business analysis tasks:
 
@@ -107,27 +126,6 @@ These queries mirror common business analysis tasks:
 * **Aggregations** (counts and groupings per category)
 * **Entity mapping** (people to teams, products to categories)
 * **Historical trends** (first events, earliest outcomes)
-
----
-
-## 🚀 How to Run
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/yourusername/survivor-database.git
-cd survivor-database
-```
-
-2. Import the SQL scripts into your MySQL environment:
-
-```bash
-mysql -u root -p < create_schema.sql
-mysql -u root -p < populate_data.sql
-mysql -u root -p < queries.sql
-```
-
-3. Run the queries to generate insights.
 
 ---
 
